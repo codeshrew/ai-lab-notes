@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Personal technical blog built with Astro 5 and AstroPaper v5. Content covers AI experimentation, coding guides, system administration, and research notes. Deployed to Cloudflare Pages.
+Personal technical blog built with Astro 5.16 and AstroPaper v5.5. Content covers AI experimentation, coding guides, system administration, and research notes. Currently a local-only proof of concept -- no deployment configured.
 
 See `SPEC.md` for the full technical specification.
 
@@ -11,9 +11,9 @@ See `SPEC.md` for the full technical specification.
 ```bash
 # Development
 pnpm dev                 # Start dev server at http://localhost:4321
-pnpm build               # Production build to dist/
+pnpm build               # Production build to dist/ (includes astro check + pagefind)
 pnpm preview             # Preview production build locally
-pnpm check               # Run Astro type checking
+pnpm check               # Run Astro type checking (also runs as part of build)
 
 # Code quality
 pnpm format              # Format with Prettier
@@ -24,52 +24,63 @@ pnpm lint                # Run ESLint
 pnpm sync                # Regenerate TypeScript types after schema changes
 ```
 
+## Node.js Setup
+
+This project uses Node 22 LTS. A `.node-version` file is in the repo root.
+
+- **fnm** (Fast Node Manager) is installed at `~/.local/share/fnm`
+- Run `fnm use` in the project directory to activate Node 22
+- **pnpm** is the package manager (installed globally under Node 22)
+
 ## Creating a New Post
 
-1. **Create the file** at `src/content/blog/YYYY-MM-DD_slug-in-kebab-case.md`
+Use the `/new-post` skill or follow these steps:
+
+1. **Create the file** at `src/data/blog/YYYY-MM-DD_slug-in-kebab-case.md`
 2. **Add frontmatter** using this template:
 
 ```yaml
 ---
 title: "Post Title Here"
-description: "One-line summary, max 200 characters."
+author: sk
 pubDatetime: 2026-02-08T00:00:00Z
-type: post          # post | guide | note
-draft: true         # Always start as draft
-tags: [tag1, tag2]
+featured: false
+draft: true
+tags:
+  - tag1
+  - tag2
+description: "One-line summary, max 200 characters."
 ---
 ```
 
 3. **Write content** in standard Markdown. Use fenced code blocks, Mermaid diagrams, and KaTeX math as needed.
-4. **Preview** with `pnpm dev` -- navigate to `http://localhost:4321/posts/slug/`
+4. **Preview** with `pnpm dev` -- navigate to `http://localhost:4321/posts/SLUG/`
 5. **When approved**, set `draft: false`
-6. **Commit and push**: the site auto-deploys via Cloudflare Pages
 
 ### Frontmatter Fields
 
 | Field | Required | Type | Notes |
 |-------|----------|------|-------|
-| `title` | Yes | string | Max 100 chars |
+| `title` | Yes | string | Post title |
 | `description` | Yes | string | Max 200 chars, used for SEO and social cards |
 | `pubDatetime` | Yes | date | ISO 8601 format |
-| `type` | No | enum | `post` (default), `guide`, `note` |
-| `draft` | No | boolean | `true` to hide from production |
+| `author` | No | string | Defaults to `sk` |
+| `draft` | No | boolean | `true` to hide from production builds |
 | `featured` | No | boolean | `true` to pin to homepage |
 | `tags` | No | string[] | Lowercase, hyphenated (e.g., `local-models`) |
 | `modDatetime` | No | date | Set when significantly updating a post |
-| `series.name` | No | string | Series title for multi-part posts |
-| `series.part` | No | number | Part number (1, 2, 3...) |
-| `ogImage` | No | string | Custom Open Graph image path |
+| `ogImage` | No | string/image | Custom Open Graph image |
 | `canonicalURL` | No | string | Canonical URL if cross-posting |
+| `timezone` | No | string | IANA timezone override |
 
 ### File Naming
 
 ```
-src/content/blog/YYYY-MM-DD_slug-in-kebab-case.md
+src/data/blog/YYYY-MM-DD_slug-in-kebab-case.md
 ```
 
 - Date prefix for chronological filesystem ordering
-- Slug becomes the URL: `/posts/slug-in-kebab-case/`
+- Slug becomes the URL: `/posts/YYYY-MM-DD_slug-in-kebab-case/`
 - Use `.mdx` extension only when embedding Astro/React components
 
 ### Images
@@ -87,11 +98,11 @@ Use lowercase, hyphenated tags. Common tags: `ai`, `llm`, `local-models`, `ollam
 
 ### Content Collections
 
-Content is defined in `src/content.config.ts` with Zod schema validation. After changing the schema, run `pnpm sync` to regenerate TypeScript types.
-
-All content lives in `src/content/blog/` regardless of type (post, guide, note). The `type` frontmatter field distinguishes them.
+Content is defined in `src/content.config.ts` with Zod schema validation. Blog posts live in `src/data/blog/` (AstroPaper v5 convention, not `src/content/blog/`). After changing the schema, run `pnpm sync` to regenerate TypeScript types.
 
 ### Mermaid Diagrams
+
+Rendered client-side via Mermaid JS (loaded from CDN). A custom remark plugin (`src/plugins/remark-mermaid.mjs`) converts fenced `mermaid` code blocks into `<pre class="mermaid">` elements. Theme-aware (detects dark/light mode).
 
 Use fenced code blocks with the `mermaid` language:
 
@@ -104,6 +115,8 @@ graph TD
 
 ### KaTeX Math
 
+Installed: `remark-math` + `rehype-katex`. KaTeX CSS loaded from CDN in the base layout.
+
 Inline: `$E = mc^2$`
 Display block: `$$\sum_{i=1}^{n} x_i$$`
 
@@ -111,40 +124,38 @@ Display block: `$$\sum_{i=1}^{n} x_i$$`
 
 Shiki handles syntax highlighting. Supported features:
 - Language-specific highlighting (200+ languages)
-- Line highlighting: ` ```python {1,3-5} `
-- Code copy button (built in)
+- Line highlighting via Shiki transformers
+- Code copy button (built into PostDetails layout, skips `.mermaid` blocks)
 - Dark/light theme-aware
+- Diff notation support
 
-### Series Posts
+### Site Configuration
 
-For multi-part content, add `series` to frontmatter:
-
-```yaml
-series:
-  name: "Series Name"
-  part: 1
-```
+Site metadata is in `src/config.ts` (title, author, description, etc.).
+Social links are in `src/constants.ts`.
+Astro configuration is in `astro.config.ts` (TypeScript, not .mjs).
 
 ## Code Style
 
-- **TypeScript**: Strict mode, path aliases (`@/components`, `@/utils`, etc.)
-- **Formatting**: Prettier (configured in `.prettierrc`)
-- **Linting**: ESLint (configured in `.eslintrc.cjs`)
-- **CSS**: Tailwind CSS v4 (utility classes)
-- **Components**: Astro components (`.astro` files), React only if needed for interactivity
+- **TypeScript**: Strict mode, path alias `@/*` maps to `./src/*`
+- **Formatting**: Prettier (configured in `.prettierrc.mjs`)
+- **Linting**: ESLint (configured in `eslint.config.js`)
+- **CSS**: Tailwind CSS v4 (utility classes, via `@tailwindcss/vite` plugin)
+- **Components**: Astro components (`.astro` files)
 
 ## Safety
 
-- **Always preview before pushing.** Run `pnpm build` to catch errors before deploy.
-- **Do not break the build.** Run `pnpm check` if unsure about TypeScript errors.
+- **Always preview before committing.** Run `pnpm build` to catch errors.
+- **Do not break the build.** The build script runs `astro check` automatically.
 - **Drafts are safe.** Set `draft: true` to write freely without publishing.
 - **Do not commit secrets.** No API keys or credentials in content or config files.
 - **Do not modify theme internals without reason.** AstroPaper files in `src/layouts/`, `src/components/`, and `src/utils/` work well as-is. Customize via configuration first, component overrides second.
 
 ## Deployment
 
-- **Primary**: Cloudflare Pages (auto-deploys on push to `main`)
-- **Preview**: Every PR gets a preview URL from Cloudflare
+Not yet configured. Currently local-only POC.
+
+- **Dev server**: `pnpm dev` at http://localhost:4321
 - **Build command**: `pnpm build`
 - **Output directory**: `dist`
 
@@ -152,19 +163,25 @@ series:
 
 ```
 src/
-  content/
-    blog/               Posts, guides, and notes (Markdown/MDX)
-    content.config.ts   Zod schema for content collections
+  data/
+    blog/               Blog posts (Markdown)
+  content.config.ts     Zod schema for content collections
+  config.ts             Site metadata (title, author, etc.)
+  constants.ts          Social links and share links
   assets/
     images/blog/        Post images, organized by slug
+    icons/              SVG icon components
   components/           Astro components
-  layouts/              Page layouts
-  pages/                Route pages (index, posts, tags, search, etc.)
-  plugins/              Custom remark/rehype plugins
-  styles/               Global CSS
-  utils/                Helper functions
-public/                 Static assets (favicon, robots.txt)
-.claude/skills/         Claude Code skills
+  layouts/              Page layouts (Layout, PostDetails, AboutLayout, Main)
+  pages/                Route pages (index, posts, tags, search, archives, about, etc.)
+  plugins/              Custom remark plugins (remark-mermaid)
+  scripts/              Client-side scripts (theme toggle)
+  styles/               Global CSS (Tailwind)
+  utils/                Helper functions (slugify, getSortedPosts, etc.)
+public/                 Static assets (favicon, OG image, pagefind index)
+.claude/skills/         Claude Code skills (new-post)
+astro.config.ts         Astro configuration
+tsconfig.json           TypeScript configuration
 SPEC.md                 Full technical specification
 CLAUDE.md               This file
 ```
