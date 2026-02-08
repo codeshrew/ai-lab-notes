@@ -135,6 +135,38 @@ Site metadata is in `src/config.ts` (title, author, description, etc.).
 Social links are in `src/constants.ts`.
 Astro configuration is in `astro.config.ts` (TypeScript, not .mjs).
 
+## Content Guidelines
+
+Lessons learned from the initial batch of blog posts:
+
+### Writing for a General Audience
+
+- Write for any developer, not a specific machine. Replace "my system" with "your system", "I use" with "you can use".
+- When referencing specific hardware, frame it as one example among tiers: "if you have an RTX 3090 or similar 24GB GPU" rather than "on my RTX 3090".
+- Convert personal research docs into general guides. Strip wiki links, internal references, and machine-specific details.
+- Include multiple options and tiers (e.g., model recommendations for 8GB, 12GB, 16GB, 24GB VRAM) rather than prescribing one setup.
+
+### Tag Conventions
+
+- Tags are lowercase, hyphenated strings (enforced by convention, not schema).
+- Use broad category tags (`ai`, `linux`, `coding`, `security`) plus specific topic tags (`ollama`, `mcp`, `playwright`, `claude-code`).
+- Always include `guide` for how-to content. Use `til` for short Today-I-Learned notes.
+- Avoid overly specific tags that only one post would use.
+
+### Frontmatter Gotchas
+
+- The Zod schema in `src/content.config.ts` does NOT include a `type` field despite what SPEC.md planned. Do not add `type: post` or `type: guide` -- it will cause a build error.
+- `pubDatetime` must be a valid ISO 8601 date. The format `2026-02-08T00:00:00Z` works reliably.
+- `description` has no enforced max length in the schema but should be kept under 200 characters for OG card display.
+- Set `draft: true` on all new posts. The user will review and set `draft: false` to publish.
+- Shiki does not recognize `gitignore` as a language identifier. Use `bash` for `.gitignore` content blocks.
+
+### Build Verification
+
+- Always run `pnpm build` after writing or editing posts to catch errors before committing.
+- Draft posts are excluded from production builds but still validated by `astro check`.
+- The build runs `astro check` (TypeScript/schema validation), then `astro build` (static generation), then `pagefind` (search indexing).
+
 ## Code Style
 
 - **TypeScript**: Strict mode, path alias `@/*` maps to `./src/*`
