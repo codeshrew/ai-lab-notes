@@ -3,7 +3,7 @@ title: "Building a Self-Hosted Monitoring Stack with Prometheus, Grafana, and Lo
 author: sk
 pubDatetime: 2026-02-08T00:00:00Z
 featured: false
-draft: true
+draft: false
 tags:
   - monitoring
   - prometheus

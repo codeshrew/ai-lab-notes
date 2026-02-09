@@ -3,7 +3,7 @@ title: "Hello World: Welcome to AI Lab Notes"
 author: sk
 pubDatetime: 2026-02-08T00:00:00Z
 featured: true
-draft: true
+draft: false
 tags:
   - meta
   - astro

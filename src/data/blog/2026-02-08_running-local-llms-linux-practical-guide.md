@@ -3,7 +3,7 @@ title: "Running Local LLMs on Linux: A Practical Guide"
 author: sk
 pubDatetime: 2026-02-08T00:00:00Z
 featured: false
-draft: true
+draft: false
 tags:
   - ai
   - llm

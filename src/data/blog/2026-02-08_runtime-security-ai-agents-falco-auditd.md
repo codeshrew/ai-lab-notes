@@ -3,7 +3,7 @@ title: "Runtime Security for AI Agents with Falco and auditd"
 author: sk
 pubDatetime: 2026-02-08T00:00:00Z
 featured: false
-draft: true
+draft: false
 tags:
   - security
   - ai

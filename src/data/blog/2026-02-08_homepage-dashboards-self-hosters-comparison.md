@@ -3,7 +3,7 @@ title: "Homepage Dashboards for Self-Hosters: Comparing 8 Tools"
 author: sk
 pubDatetime: 2026-02-08T00:00:00Z
 featured: false
-draft: true
+draft: false
 tags:
   - self-hosted
   - docker

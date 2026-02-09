@@ -3,7 +3,7 @@ title: "Browser Automation for AI Agents: MCP, Playwright, and Beyond"
 author: sk
 pubDatetime: 2026-02-08T00:00:00Z
 featured: false
-draft: true
+draft: false
 tags:
   - ai
   - browser-automation
