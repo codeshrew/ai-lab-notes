@@ -1,7 +1,7 @@
 ---
 title: "Building a Self-Hosted Monitoring Stack with Prometheus, Grafana, and Loki"
 author: sk
-pubDatetime: 2026-02-08T00:00:00Z
+pubDatetime: 2026-02-08T12:00:00-07:00
 featured: false
 draft: false
 tags:
