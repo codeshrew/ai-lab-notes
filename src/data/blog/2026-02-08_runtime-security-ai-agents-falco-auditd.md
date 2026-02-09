@@ -62,13 +62,13 @@ graph TD
         AUDITD_K -->|events| AUDITD[auditd Daemon]
 
         FALCO -->|matches rules| FALCO_RULES[Custom YAML Rules]
-        FALCO -->|alerts| SYSLOG[syslog / journald]
+        FALCO -->|alerts| SYSLOG["syslog / journald"]
         FALCO -->|alerts| NTFY[ntfy Push Notifications]
         FALCO -->|alerts| WEBHOOK[Webhooks]
 
-        AUDITD -->|logs| AUDIT_LOG[/var/log/audit/audit.log]
+        AUDITD -->|logs| AUDIT_LOG["/var/log/audit/audit.log"]
         AUDITD -->|configured by| AUDIT_RULES[Audit Rules Files]
-        AUDIT_LOG -->|query| AUSEARCH[ausearch / aureport]
+        AUDIT_LOG -->|query| AUSEARCH["ausearch / aureport"]
         AUDIT_LOG -->|ship to| LOKI[Loki via Promtail]
     end
 
