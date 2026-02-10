@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Personal technical blog built with Astro 5.16 and AstroPaper v5.5. Content covers AI experimentation, coding guides, system administration, and research notes. Currently a local-only proof of concept -- no deployment configured.
+Personal technical blog built with Astro 5.16 and AstroPaper v5.5. Content covers AI experimentation, coding guides, system administration, and research notes. Deployed to GitHub Pages at https://codeshrew.github.io/ai-lab-notes/.
 
 See `SPEC.md` for the full technical specification.
 
@@ -185,8 +185,11 @@ Lessons learned from the initial batch of blog posts:
 
 ## Deployment
 
-Not yet configured. Currently local-only POC.
+Deployed to GitHub Pages via GitHub Actions.
 
+- **Live URL**: https://codeshrew.github.io/ai-lab-notes/
+- **Deploy trigger**: Push to `main` or manual `workflow_dispatch`
+- **Workflow**: `.github/workflows/deploy.yml`
 - **Dev server**: `pnpm dev` at http://localhost:4321
 - **Build command**: `pnpm build`
 - **Output directory**: `dist`

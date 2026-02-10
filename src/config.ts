@@ -1,5 +1,5 @@
 export const SITE = {
-  website: "http://localhost:4321/",
+  website: "https://codeshrew.github.io/ai-lab-notes/",
   author: "sk",
   profile: "",
   desc: "AI experimentation and coding notes.",

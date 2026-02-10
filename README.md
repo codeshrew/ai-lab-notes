@@ -31,7 +31,7 @@ See `CLAUDE.md` for frontmatter schema and content conventions, or `SPEC.md` for
 
 ## Deployment
 
-Not yet configured. Currently a local-only proof of concept.
+Deployed to [GitHub Pages](https://codeshrew.github.io/ai-lab-notes/) via GitHub Actions. Pushes to `main` trigger automatic builds and deploys.
 
 ## Tech Stack
 
