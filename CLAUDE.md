@@ -179,7 +179,7 @@ Lessons learned from the initial batch of blog posts:
 
 - **Always preview before committing.** Run `pnpm build` to catch errors.
 - **Do not break the build.** The build script runs `astro check` automatically.
-- **Drafts are safe.** Set `draft: true` to write freely without publishing.
+- **Drafts are NOT private.** `draft: true` only hides posts from the built site — the source files are still visible in the public GitHub repo. Do not put sensitive, private, or unfinished-but-embarrassing content in draft posts. Use local-only files (gitignored) for truly private drafts.
 - **Do not commit secrets.** No API keys or credentials in content or config files.
 - **Do not modify theme internals without reason.** AstroPaper files in `src/layouts/`, `src/components/`, and `src/utils/` work well as-is. Customize via configuration first, component overrides second.
 
