@@ -1,6 +1,9 @@
 import { BLOG_PATH } from "@/content.config";
 import { slugifyStr } from "./slugify";
 
+// Strip trailing slash from BASE_URL so join("/") produces clean paths
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 /**
  * Get full path of a blog post
  * @param id - id of the blog post (aka slug)
@@ -21,7 +24,7 @@ export function getPath(
     .slice(0, -1) // remove the last segment_ file name_ since it's unnecessary
     .map(segment => slugifyStr(segment)); // slugify each segment path
 
-  const basePath = includeBase ? "/posts" : "";
+  const basePath = includeBase ? `${BASE}/posts` : "";
 
   // Making sure `id` does not contain the directory
   const blogId = id.split("/");
