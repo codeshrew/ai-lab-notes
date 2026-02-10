@@ -327,9 +327,22 @@ Ghostty is a relatively young project (first public release in December 2024). I
 
 Ghostty v1.2.x had a memory leak triggered by heavy scrollback -- the kind of output AI coding agents routinely produce. Over a multi-hour session, memory usage could grow to several gigabytes. This was fixed in v1.3 (released March 2026). If you are running v1.2.x, either upgrade or keep `scrollback-limit` conservative.
 
-### Terminal Identification and SSH
+### Terminal Identification: Missing Prompt Colors
 
-Ghostty sets `TERM=xterm-ghostty` by default. Most modern systems handle this fine, but older servers you SSH into may not have the `xterm-ghostty` terminfo entry. If you see broken formatting or missing colors over SSH, override the TERM variable:
+Ghostty sets `TERM=xterm-ghostty` by default. This can cause two issues:
+
+**Local prompt colors missing.** The default `.bashrc` on Ubuntu and Pop!_OS only enables color prompts for terminals matching `xterm-color|*-256color`. Since `xterm-ghostty` does not match that pattern, your prompt will appear uncolored. Fix it by editing `~/.bashrc` and adding `xterm-ghostty` to the case statement (usually around line 40):
+
+```bash
+# Before:
+    xterm-color|*-256color) color_prompt=yes;;
+# After:
+    xterm-color|*-256color|xterm-ghostty) color_prompt=yes;;
+```
+
+Then open a new tab or run `source ~/.bashrc`.
+
+**SSH to older servers.** Remote hosts may not have the `xterm-ghostty` terminfo entry. If you see broken formatting or missing colors over SSH, override the TERM variable:
 
 ```bash
 # In your .bashrc or .zshrc, for SSH sessions to older hosts
