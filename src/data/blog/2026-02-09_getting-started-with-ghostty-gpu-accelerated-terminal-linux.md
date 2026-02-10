@@ -1,7 +1,7 @@
 ---
 title: "Getting Started with Ghostty: A Modern GPU-Accelerated Terminal for Linux"
 author: sk
-pubDatetime: 2026-02-09T00:00:00Z
+pubDatetime: 2026-02-09T12:00:00-05:00
 featured: false
 draft: false
 tags:
