@@ -218,26 +218,27 @@ You can also set `theme = light:GruvboxLight,dark:GruvboxDark` to automatically 
 
 ## Essential Keybindings
 
-Ghostty ships with sensible default keybindings. Here are the ones you will use most:
+Ghostty ships with sensible default keybindings. The shortcuts below are the **Linux defaults** -- on macOS, Ghostty uses Cmd (Super) instead of Ctrl+Shift for most actions (e.g., Cmd+D for split right, Cmd+T for new tab). You can view your platform's defaults with `ghostty +list-keybinds --default`. Here are the ones you will use most:
 
 ### Window Management
 
-| Action | Shortcut |
+| Action | Linux Shortcut |
 |--------|----------|
 | New tab | Ctrl+Shift+T |
-| Close tab | Ctrl+Shift+W |
+| Close tab/split | Ctrl+Shift+W |
 | Next tab | Ctrl+Tab |
 | Previous tab | Ctrl+Shift+Tab |
-| Split right | Ctrl+Shift+Enter |
-| Split down | Ctrl+Shift+D (Linux) |
-| Close split | Ctrl+Shift+W |
-| Focus next split | Ctrl+Shift+] |
-| Focus previous split | Ctrl+Shift+[ |
-| Equalize splits | Ctrl+Shift+E |
+| New split right | Ctrl+Shift+O |
+| New split down | Ctrl+Shift+E |
+| Focus next split | Ctrl+Super+] |
+| Focus previous split | Ctrl+Super+[ |
+| Focus split directionally | Ctrl+Alt+Arrow keys |
+| Resize split | Ctrl+Super+Shift+Arrow keys |
+| Toggle split zoom | Ctrl+Shift+Enter |
 
 ### Navigation
 
-| Action | Shortcut |
+| Action | Linux Shortcut |
 |--------|----------|
 | Jump to previous prompt | Ctrl+Shift+PageUp |
 | Jump to next prompt | Ctrl+Shift+PageDown |
@@ -248,14 +249,14 @@ Ghostty ships with sensible default keybindings. Here are the ones you will use 
 
 ### Other
 
-| Action | Shortcut |
+| Action | Linux Shortcut |
 |--------|----------|
 | Increase font size | Ctrl+= |
 | Decrease font size | Ctrl+- |
 | Reset font size | Ctrl+0 |
 | Reload config | Ctrl+Shift+, |
 | Command palette | Ctrl+Shift+P |
-| Toggle fullscreen | F11 |
+| Toggle fullscreen | Ctrl+Enter |
 | Quick terminal (quake mode) | Global hotkey (configurable) |
 
 ### Custom Vim-Style Split Navigation
@@ -296,7 +297,7 @@ AI agents frequently produce code blocks, commands, and configuration snippets i
 
 A productive AI agent workflow often involves two terminals side by side: the agent session in one pane and a manual terminal in the other (for running tests, checking git status, reading files, or making quick edits).
 
-Use **Ctrl+Shift+Enter** to split right and **Ctrl+Shift+D** to split down. With the vim-style keybindings from the previous section, you can navigate between splits without reaching for the mouse.
+Use **Ctrl+Shift+O** to split right and **Ctrl+Shift+E** to split down. With the vim-style keybindings from the previous section, you can navigate between splits without reaching for the mouse. You can also use the default **Ctrl+Alt+Arrow** keys to move between splits directionally.
 
 ### Preserve Layout Across Restarts
 
