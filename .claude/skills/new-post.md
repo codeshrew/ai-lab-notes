@@ -21,7 +21,7 @@ When the user asks to create a new post (or invokes `/new-post`):
    ---
    title: "Post Title Here"
    author: sk
-   pubDatetime: YYYY-MM-DDT00:00:00Z
+   pubDatetime: YYYY-MM-DDT12:00:00-05:00
    featured: false
    draft: true
    tags:
@@ -53,7 +53,7 @@ When the user asks to create a new post (or invokes `/new-post`):
 ## Notes
 
 - Always start posts as `draft: true`
-- The `pubDatetime` must be a valid ISO 8601 date
+- The `pubDatetime` must use an Eastern Time offset (e.g., `T12:00:00-05:00` for EST, `-04:00` for EDT). Never use `Z` (UTC midnight) -- the site timezone is `America/New_York` so UTC midnight displays as the previous day
 - The `description` field is used for SEO meta tags and social cards -- keep it under 200 characters
 - For multi-part posts, add `series: { name: "Series Name", part: 1 }` to frontmatter
 - For guide-style posts, consider adding `type: guide` (though AstroPaper v5 doesn't use this field by default)

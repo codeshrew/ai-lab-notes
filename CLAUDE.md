@@ -43,7 +43,7 @@ Use the `/new-post` skill or follow these steps:
 ---
 title: "Post Title Here"
 author: sk
-pubDatetime: 2026-02-08T00:00:00Z
+pubDatetime: 2026-02-09T12:00:00-05:00
 featured: false
 draft: true
 tags:
@@ -63,7 +63,7 @@ description: "One-line summary, max 200 characters."
 |-------|----------|------|-------|
 | `title` | Yes | string | Post title |
 | `description` | Yes | string | Max 200 chars, used for SEO and social cards |
-| `pubDatetime` | Yes | date | ISO 8601 format |
+| `pubDatetime` | Yes | date | ISO 8601 with ET offset, e.g. `T12:00:00-05:00` (never `Z`) |
 | `author` | No | string | Defaults to `sk` |
 | `draft` | No | boolean | `true` to hide from production builds |
 | `featured` | No | boolean | `true` to pin to homepage |
@@ -156,7 +156,7 @@ Lessons learned from the initial batch of blog posts:
 ### Frontmatter Gotchas
 
 - The Zod schema in `src/content.config.ts` does NOT include a `type` field despite what SPEC.md planned. Do not add `type: post` or `type: guide` -- it will cause a build error.
-- `pubDatetime` must be a valid ISO 8601 date. The format `2026-02-08T00:00:00Z` works reliably.
+- `pubDatetime` must be a valid ISO 8601 date. **Always use an Eastern Time offset** (e.g., `2026-02-09T12:00:00-05:00` for EST or `-04:00` for EDT). Do NOT use `Z` (UTC midnight) — the site timezone is `America/New_York`, so UTC midnight renders as the previous day. Using noon ET avoids date display issues regardless of DST.
 - `description` has no enforced max length in the schema but should be kept under 200 characters for OG card display.
 - Set `draft: true` on all new posts. The user will review and set `draft: false` to publish.
 - Shiki does not recognize `gitignore` as a language identifier. Use `bash` for `.gitignore` content blocks.
