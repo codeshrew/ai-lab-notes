@@ -195,6 +195,160 @@ I ran 12 prompts across different genres at 1080p to stress-test the model. The 
 
 The file size of each clip correlated with motion complexity: the calm Victorian hallway was 758 KB while the splashing grizzly bear was 5.0 MB at the same resolution. Less motion means more efficient encoding and more quality budget per pixel.
 
+### Video Gallery
+
+All 12 videos below were generated with identical settings: **LTX-2 19B Distilled FP8**, 1920x1088, euler_ancestral sampler, CFG 1.0, 8 Pass 1 steps + 3 Pass 2 refinement steps, 121 frames at 24 fps (~5 seconds). Only the prompts differ.
+
+#### Convincing Output
+
+<details>
+<summary><strong>Victorian Hallway</strong> — Horror/Atmospheric (758 KB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-victorian-hallway.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A narrow Victorian hallway stretches into shadow, lit by a single flickering gas lamp on the wall. Dust motes drift through the amber light. Faded wallpaper peels at the edges. The camera creeps forward slowly as floorboards creak beneath unseen footsteps. A distant clock ticks in another room.*
+
+**Why it works:** Minimal subject motion, strong atmospheric textures, slow deliberate camera movement. The flickering light gives the scene life without requiring complex object interaction. Smallest file in the batch -- less pixel change per frame means more efficient encoding.
+
+</details>
+
+<details>
+<summary><strong>Spider Web Dew</strong> — Macro/Nature (3.4 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-spider-web-dew.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *Morning dew clings to the delicate threads of a spider web stretched between two blades of grass. The camera captures an extreme macro shot as a single dewdrop trembles, refracting the sunrise into tiny rainbows. A gentle breeze causes the web to sway. The soft chirping of early morning birds fills the air.*
+
+**Why it works:** Macro subjects with natural subtle motion are LTX-2's sweet spot. The trembling dewdrops and swaying web are exactly the kind of gentle, physics-consistent motion the model handles well. Very convincing realism.
+
+</details>
+
+<details>
+<summary><strong>Jazz Pianist</strong> — Music/Close-up (2.2 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-jazz-pianist.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A jazz pianist's weathered hands move across ivory keys in a dimly lit smoke-filled club. Close-up on the fingers as they glide through a melancholy chord progression. Warm amber stage light catches the worn edges of the keys. The camera slowly pulls back to reveal the piano. A mellow saxophone accompanies the melody.*
+
+**Why it works:** Hands-on-keys is a focused, repetitive motion that the model reproduces well. The smoky atmosphere and warm lighting add depth without requiring complex generation. Minor face warping appears only in the final frames as the camera pulls back -- keeping the camera on the hands would have been flawless.
+
+</details>
+
+#### Solid Results
+
+<details>
+<summary><strong>Cat on Windowsill</strong> — Cozy/Animal (2.7 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-cat-windowsill.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A tabby cat curls up on a rain-spattered windowsill, watching droplets race down the glass. Soft grey daylight illuminates its fur. The camera holds a close-up as the cat's eyes track a single raindrop. Its tail flicks lazily. The patter of rain on glass and a faint purring fill the soundscape.*
+
+</details>
+
+<details>
+<summary><strong>Tokyo Alley</strong> — Cyberpunk/Urban (3.7 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-tokyo-alley.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *Rain hammers a neon-drenched Tokyo alleyway at night. Glowing signs in Japanese reflect off wet asphalt in streaks of pink, blue, and orange. Steam rises from a street vent. A lone figure with an umbrella walks away from the camera. The sounds of rain, distant traffic, and a muffled electronic beat pulse through the scene.*
+
+</details>
+
+<details>
+<summary><strong>Northern Lights</strong> — Arctic/Landscape (3.0 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-northern-lights.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *Northern lights ripple across the arctic sky in waves of green and violet, reflecting off a perfectly still frozen lake. Snow-covered pines frame the edges. The camera tilts slowly upward from the ice surface to the full aurora display. The deep silence of the arctic is broken only by the faint crackle of shifting ice.*
+
+</details>
+
+<details>
+<summary><strong>Cowboy Sunset</strong> — Western/Silhouette (2.4 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-cowboy-sunset.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A solitary cowboy on horseback crests a red desert ridge at sunset. Dust swirls behind the horse's hooves. The vast Monument Valley stretches below in deep orange and purple shadows. The camera holds a wide silhouette shot as the wind tugs at the rider's duster. A lone harmonica note drifts on the wind.*
+
+</details>
+
+<details>
+<summary><strong>Ink Drop</strong> — Abstract/Macro (1.7 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-ink-drop.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A single drop of crimson ink falls into a glass of perfectly still water. The camera captures a tight macro shot as the ink blooms outward in swirling tendrils, unfurling like smoke. The water shifts from clear to deep red at the edges. A soft ambient hum resonates in the background.*
+
+</details>
+
+<details>
+<summary><strong>Sea Turtle</strong> — Underwater/Nature (4.0 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-sea-turtle.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A giant sea turtle glides through a vibrant coral reef, sunlight filtering through the turquoise water in shimmering columns. Small fish scatter as it passes. The camera tracks alongside the turtle at eye level. Bubbles rise gently. The muffled sound of water pressure and distant whale song fills the scene.*
+
+</details>
+
+#### Unconvincing Output
+
+<details>
+<summary><strong>Grizzly Bear</strong> — Wildlife/Action (5.0 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-grizzly-bear.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A massive grizzly bear stands in a shallow rushing river, muscles tensed, as a silver salmon leaps from the churning whitewater. The camera holds a medium shot from the riverbank. Water droplets catch the late afternoon sunlight as the bear lunges. The roar of the rapids fills the air with a deep, constant rumble.*
+
+**Why it fails:** Object interaction. The bear and salmon move independently -- there is no convincing physical connection between them. The water motion is good, but the "catch" never lands. Largest file in the batch due to the complex water and motion throughout every frame.
+
+</details>
+
+<details>
+<summary><strong>Viking Fleet</strong> — Historical/Crowd (3.0 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-viking-fleet.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A fleet of Viking longships cuts through fog-covered North Atlantic waters at dawn. Oars rise and fall in rhythm. Dragon-headed prows emerge from the mist. The camera slowly pans across the fleet from water level. Waves lap against wooden hulls. A low war drum beats steadily as the wind catches the sails.*
+
+**Why it fails:** Multiple similar objects clustered together. The ships are crammed unrealistically close, the water surface is flat and unconvincing, and the overall quality looks like a pre-rendered video game cutscene rather than live footage. Crowd and fleet scenes consistently underperform.
+
+</details>
+
+<details>
+<summary><strong>Astronaut</strong> — Sci-Fi/Zero Gravity (1.5 MB)</summary>
+
+<video controls preload="metadata" style="width: 100%; max-width: 100%; border-radius: 8px; margin: 1rem 0;">
+  <source src="/ai-lab-notes/videos/ltx2-astronaut.mp4" type="video/mp4">
+</video>
+
+**Prompt:** *A lone astronaut floats outside a space station, tethered by a thin white cable against the vast blackness of space. Earth's blue curve glows below. The camera slowly rotates around the astronaut as sunlight glints off the visor. The only sound is the quiet hiss of life support and radio static.*
+
+**Why it fails:** Zero-gravity physics. The model has no good reference for how objects behave in space, producing a rigid, toy-like figure that hangs rather than floats. The space station background and Earth are decent, but the astronaut breaks the illusion.
+
+</details>
+
 ## Image-to-Video Pipeline
 
 LTX-2 supports animating still images, which opens up a powerful two-step workflow:
