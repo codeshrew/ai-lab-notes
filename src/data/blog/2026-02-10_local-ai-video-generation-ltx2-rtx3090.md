@@ -164,7 +164,7 @@ What works well:
 
 - **Temporal descriptions:** Describe what happens over the 5 seconds. "The wind catches...", "The camera slowly pushes in...", "Smoke rises from..."
 - **Camera movement:** Be explicit -- "camera slowly dollies in", "tracking shot from the side." Simpler movements produce better results.
-- **Audio cues:** LTX-2 generates audio alongside video. "Howling wind", "metallic clinking", "distant thunder" all get rendered.
+- **Audio cues:** LTX-2 generates audio alongside video. Including sound descriptions ("howling wind", "distant thunder") gives the model context for the scene even though the audio quality itself is poor -- expect generic ambient noise rather than accurate sound design. The audio generation is best treated as a proof-of-concept; plan to replace it in post-production for anything you share.
 - **Textures and materials:** Specific details improve output -- "weathered steel plate armor", "scarred textured hide"
 - **Subtle motion over complex action:** A person standing with wind in their hair looks far better than someone swinging a weapon
 
@@ -176,6 +176,24 @@ What to avoid:
 - **High subject deformation:** Complex body motion (rearing back, swinging weapons, running) causes warping that no amount of quality settings can fix
 
 The general principle: **the less things move on screen, the better they look.** A static subject with atmospheric motion (wind, smoke, light changes) and a slow camera move will always beat a complex action scene at this model size.
+
+### What Works and What Doesn't: 12-Prompt Batch Test
+
+I ran 12 prompts across different genres at 1080p to stress-test the model. The results split cleanly:
+
+**Convincing output:**
+- **Atmospheric/ambient scenes** dominated -- a flickering Victorian hallway, morning dew on a spider web, and a jazz pianist's hands on keys all looked great. Minimal motion, strong textures, slow camera moves.
+- **Macro/close-up subjects** with natural motion (dew drops catching light, fingers on piano keys) were the most photorealistic results.
+
+**Unconvincing output:**
+- **Object interaction** broke down -- a grizzly bear "catching" a salmon produced disconnected motion where the fish and bear moved independently.
+- **Crowd/fleet scenes** looked like a mediocre video game -- a Viking longship fleet had too many ships crammed together with flat, unconvincing water.
+- **Zero-gravity/unusual physics** produced toy-like results -- an astronaut floating outside a space station looked like a plastic figure on a string.
+- **Face close-ups during camera movement** caused late-frame warping -- a piano scene was clean until the camera panned up to the musician's face at the end.
+
+**Universal issue: audio quality is poor.** Every clip produced generic ambient noise regardless of the audio cues in the prompt. Include sound descriptions for scene context, but plan to replace the audio track entirely for anything you share.
+
+The file size of each clip correlated with motion complexity: the calm Victorian hallway was 758 KB while the splashing grizzly bear was 5.0 MB at the same resolution. Less motion means more efficient encoding and more quality budget per pixel.
 
 ## Image-to-Video Pipeline
 
