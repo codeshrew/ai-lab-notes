@@ -1,0 +1,427 @@
+---
+export interface VideoEntry {
+  title: string;
+  genre: string;
+  prompt: string;
+  src: string;
+  size: string;
+  quality: "convincing" | "solid" | "unconvincing";
+  notes?: string;
+}
+
+interface Props {
+  videos: VideoEntry[];
+  basePath?: string;
+}
+
+const { videos, basePath = "/ai-lab-notes" } = Astro.props;
+
+const qualityLabels = {
+  convincing: "Convincing",
+  solid: "Solid",
+  unconvincing: "Unconvincing",
+};
+
+const qualityOrder = ["convincing", "solid", "unconvincing"] as const;
+const grouped = qualityOrder
+  .map(q => ({
+    quality: q,
+    label: qualityLabels[q],
+    items: videos.filter(v => v.quality === q),
+  }))
+  .filter(g => g.items.length > 0);
+
+const defaultFilter = qualityOrder[0];
+---
+
+<div class="video-gallery" id="video-gallery">
+  <!-- Filter tabs -->
+  <div class="gallery-tabs" role="tablist" aria-label="Filter videos by quality">
+    {grouped.map((g, i) => (
+      <button
+        class={`tab${i === 0 ? " active" : ""}`}
+        role="tab"
+        aria-selected={i === 0 ? "true" : "false"}
+        data-filter={g.quality}
+      >
+        {g.label} <span class="tab-count">{g.items.length}</span>
+      </button>
+    ))}
+    <button class="tab" role="tab" aria-selected="false" data-filter="all">
+      All <span class="tab-count">{videos.length}</span>
+    </button>
+  </div>
+
+  <!-- Video cards -->
+  <div class="gallery-grid">
+    {(() => {
+      let visibleIndex = 0;
+      return videos.map((video) => {
+        const show = video.quality === defaultFilter;
+        const stagger = show ? visibleIndex++ : 0;
+        return (
+      <article
+        class={`video-card quality-${video.quality}${show ? "" : " hidden"}`}
+        data-quality={video.quality}
+        style={`--stagger: ${stagger * 0.1}s`}
+      >
+        <div class="video-wrapper">
+          <video
+            preload="none"
+            controls
+            class="lazy-video"
+            >
+            <source src={`${basePath}${video.src}`} type="video/mp4" />
+          </video>
+          <span class={`quality-badge badge-${video.quality}`}>
+            {qualityLabels[video.quality]}
+          </span>
+        </div>
+
+        <div class="card-content">
+          <div class="card-header">
+            <span class="card-genre">{video.genre}</span>
+            <h3 class="card-title">{video.title}</h3>
+          </div>
+
+          <p class="card-prompt">{video.prompt}</p>
+
+          {video.notes && (
+            <p class="card-notes"><span class="notes-label">Analysis</span> {video.notes}</p>
+          )}
+
+          <div class="card-meta">
+            <span>1920x1088</span>
+            <span>5s @ 24fps</span>
+            <span>{video.size}</span>
+            <span>FP8 Distilled</span>
+          </div>
+        </div>
+      </article>
+        );
+      });
+    })()}
+  </div>
+
+  <p class="gallery-settings">
+    <strong>Shared settings:</strong> LTX-2 19B Distilled FP8, euler_ancestral sampler,
+    CFG 1.0, 8 Pass 1 steps + 3 Pass 2 refinement steps, 121 frames at 24 fps.
+    Only the prompts differ.
+  </p>
+</div>
+
+<style>
+  .video-gallery {
+    margin: 2rem 0 3rem;
+  }
+
+  /* ---- Tabs ---- */
+  .gallery-tabs {
+    display: flex;
+    gap: 2rem;
+    border: none;
+    padding: 0;
+    margin-bottom: 2.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    opacity: 0.4;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+  }
+
+  .tab:hover {
+    opacity: 0.7;
+  }
+
+  .tab.active {
+    opacity: 1;
+  }
+
+  .tab::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  .tab.active::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 10px;
+    padding: 0 6px;
+    font-size: 0.65rem;
+    opacity: 0.6;
+  }
+
+  .tab.active .tab-count {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--background);
+    opacity: 1;
+  }
+
+  /* ---- Grid ---- */
+  .gallery-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* ---- Card ---- */
+  .video-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--muted) 30%, var(--background));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+    box-shadow:
+      0 8px 32px -8px rgba(0, 0, 0, 0.25),
+      0 0 0 1px color-mix(in srgb, var(--foreground) 4%, transparent) inset;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: cardReveal 0.5s ease-out forwards;
+    animation-delay: var(--stagger);
+  }
+
+  .video-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 20px 48px -12px rgba(0, 0, 0, 0.35),
+      0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent) inset;
+    border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .video-card.hidden {
+    display: none;
+  }
+
+  @keyframes cardReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ---- Video wrapper ---- */
+  .video-wrapper {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .video-wrapper video {
+    width: 100%;
+    display: block;
+    border-radius: 14px;
+    background: #000;
+    aspect-ratio: 16 / 9;
+  }
+
+  .quality-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #fff;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .badge-convincing {
+    background: rgba(16, 185, 129, 0.85);
+  }
+
+  .badge-solid {
+    background: rgba(59, 130, 246, 0.85);
+  }
+
+  .badge-unconvincing {
+    background: rgba(239, 68, 68, 0.85);
+  }
+
+  /* ---- Card content ---- */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0 0.25rem;
+  }
+
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .card-genre {
+    align-self: flex-start;
+    font-size: 0.7rem;
+    padding: 3px 9px;
+    border-radius: 6px;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .card-prompt {
+    margin: 0;
+    font-style: italic;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--foreground) 75%, transparent);
+  }
+
+  .card-notes {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  .notes-label {
+    display: inline-block;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 0.3rem;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.7rem;
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  .gallery-settings {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    opacity: 0.5;
+    text-align: center;
+    line-height: 1.5;
+  }
+</style>
+
+<script>
+  // --- Tab filtering ---
+  function initGalleryTabs() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>(".gallery-tabs .tab");
+    const cards = document.querySelectorAll<HTMLElement>(".video-card");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const filter = tab.dataset.filter;
+
+        // Update active tab
+        tabs.forEach(t => {
+          t.classList.remove("active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+
+        // Filter cards
+        let delay = 0;
+        cards.forEach(card => {
+          const quality = card.dataset.quality;
+          const show = filter === "all" || quality === filter;
+          if (show) {
+            card.classList.remove("hidden");
+            card.style.setProperty("--stagger", `${delay * 0.08}s`);
+            card.style.animation = "none";
+            card.offsetHeight; // trigger reflow
+            card.style.animation = "";
+            delay++;
+          } else {
+            card.classList.add("hidden");
+          }
+        });
+      });
+    });
+  }
+
+  // --- Lazy video loading via IntersectionObserver ---
+  function initLazyVideos() {
+    const videos = document.querySelectorAll<HTMLVideoElement>(".lazy-video");
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const video = entry.target as HTMLVideoElement;
+              video.preload = "metadata";
+              observer.unobserve(video);
+            }
+          });
+        },
+        { rootMargin: "300px" }
+      );
+      videos.forEach(v => observer.observe(v));
+    } else {
+      videos.forEach(v => (v.preload = "metadata"));
+    }
+  }
+
+  initGalleryTabs();
+  initLazyVideos();
+</script>

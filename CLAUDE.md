@@ -161,6 +161,12 @@ Lessons learned from the initial batch of blog posts:
 - Set `draft: true` on all new posts. The user will review and set `draft: false` to publish.
 - Shiki does not recognize `gitignore` as a language identifier. Use `bash` for `.gitignore` content blocks.
 
+### Component Testing
+
+When iterating on a custom component (e.g., `VideoGallery.astro`), create a minimal test page rather than reloading the full blog post each time. This avoids filling the context window with all the surrounding article text on every snapshot/verification.
+
+Example: create `src/pages/test-gallery.astro` that imports only the component with sample data, iterate on that, then delete the test page before committing.
+
 ### Build Verification
 
 - Always run `pnpm build` after writing or editing posts to catch errors before committing.

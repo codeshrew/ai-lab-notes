@@ -1,10 +1,12 @@
 import { defineConfig, envField, fontProviders } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
+import mdx from "@astrojs/mdx";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeRaw from "rehype-raw";
 import remarkMermaid from "./src/plugins/remark-mermaid.mjs";
 import {
   transformerNotationDiff,
@@ -21,6 +23,9 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
+    }),
+    mdx({
+      rehypePlugins: [rehypeRaw],
     }),
   ],
   markdown: {
