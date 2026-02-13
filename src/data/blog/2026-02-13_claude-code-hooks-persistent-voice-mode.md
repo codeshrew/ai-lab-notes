@@ -173,11 +173,15 @@ The "Stop hook as persistent reminder" pattern works for any session-level behav
 
 The key insight: skills inject context once, hooks inject it continuously. Use skills for actions (toggle a setting, run a command) and hooks for persistence (keep the agent aware of the setting).
 
-## What I Would Do Differently
+## Known Limitations
 
-The main uncertainty is whether the Stop hook's `systemMessage` survives context compression as well as I hope. It gets injected fresh each turn, so even if old reminders get compressed away, the latest one should be in the hot zone of context. Early results are promising -- Claude consistently remembers to speak across 20+ turn sessions now -- but I have not stress-tested it with truly long conversations.
+**The reminder might not be enough.** The main uncertainty is whether the Stop hook's `systemMessage` survives context compression as well as I hope. It gets injected fresh each turn, so even if old reminders get compressed away, the latest one should be in the hot zone of context. Early results are promising -- Claude consistently remembers to speak across 20+ turn sessions now -- but I have not stress-tested it with truly long conversations.
 
 If that turns out to be a problem, the next step would be a smarter hook that reads the transcript (`$transcript_path` from the hook's stdin JSON), checks whether Claude actually called `say` in its last response, and only injects the reminder if it did not. That would trade a bit more hook complexity for targeted reminders instead of blanket ones. For now, 25 tokens per turn is cheap enough that blanket reminders are fine.
+
+**Stale config across sessions.** The config file persists on disk. If you end a session with voice on and start a new one, the hook will immediately start injecting reminders -- even if you did not explicitly enable voice for that session. This is arguably the right default (you left it on, so it stays on), but it can be surprising. If you prefer voice to be opt-in per session, you could add a `SessionStart` hook that resets `enabled` to `false` on launch.
+
+**No false-positive risk when off.** One thing that works well: when voice is disabled, the hook is a true no-op. It reads one JSON file, sees `false`, and exits. There is no chance of the agent "remembering" voice mode from earlier in the conversation and speaking when it should not -- the hook is the only thing that injects voice instructions, and it only does so when the config says to.
 
 ## Setup Summary
 
