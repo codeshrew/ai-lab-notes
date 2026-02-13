@@ -173,6 +173,21 @@ The "Stop hook as persistent reminder" pattern works for any session-level behav
 
 The key insight: skills inject context once, hooks inject it continuously. Use skills for actions (toggle a setting, run a command) and hooks for persistence (keep the agent aware of the setting).
 
+## Making `say` Non-Blocking
+
+One subtle UX problem with the original `say` script: it was synchronous. When Claude called `say "Done, fixed the import error."`, the Bash tool waited for the entire TTS pipeline -- HTTP request to Kokoro, audio download, full playback via `ffplay` -- before returning. That meant Claude's text output stalled for 1-3 seconds while audio played. In a voice-enhanced workflow, you want speech and text output to happen in parallel.
+
+The fix is a one-line change at the end of the `say` script:
+
+```bash
+# Play audio in background — script returns immediately, subshell cleans up after playback
+(ffplay -nodisp -autoexit -loglevel quiet "$TMPFILE" 2>/dev/null; rm -f "$TMPFILE") &
+```
+
+The subshell `(...)` groups the playback and cleanup, and `&` backgrounds it. The script returns immediately after `curl` finishes downloading the audio, Claude continues its text output, and the audio plays concurrently. The temp file gets cleaned up after playback finishes, even though the parent script is long gone.
+
+This matters more than it sounds. Without it, every spoken response adds a noticeable pause to Claude's output. With it, speech feels like a side channel -- information arrives through your ears while your eyes keep reading the terminal.
+
 ## Known Limitations
 
 **The reminder might not be enough.** The main uncertainty is whether the Stop hook's `systemMessage` survives context compression as well as I hope. It gets injected fresh each turn, so even if old reminders get compressed away, the latest one should be in the hot zone of context. Early results are promising -- Claude consistently remembers to speak across 20+ turn sessions now -- but I have not stress-tested it with truly long conversations.
@@ -180,6 +195,8 @@ The key insight: skills inject context once, hooks inject it continuously. Use s
 If that turns out to be a problem, the next step would be a smarter hook that reads the transcript (`$transcript_path` from the hook's stdin JSON), checks whether Claude actually called `say` in its last response, and only injects the reminder if it did not. That would trade a bit more hook complexity for targeted reminders instead of blanket ones. For now, 25 tokens per turn is cheap enough that blanket reminders are fine.
 
 **Stale config across sessions.** The config file persists on disk. If you end a session with voice on and start a new one, the hook will immediately start injecting reminders -- even if you did not explicitly enable voice for that session. This is arguably the right default (you left it on, so it stays on), but it can be surprising. If you prefer voice to be opt-in per session, you could add a `SessionStart` hook that resets `enabled` to `false` on launch.
+
+**Silent first turn in new sessions.** Because the Stop hook fires *after* a response, the very first response in a new session has no voice reminder in context. The agent responds in text only, the hook fires, and from the second turn onward speech works normally. It self-corrects in one turn, but if you are expecting immediate voice output it can be confusing. A potential fix would be to add a `SessionStart` hook that injects the voice reminder into the initial context if the config is already enabled.
 
 **No false-positive risk when off.** One thing that works well: when voice is disabled, the hook is a true no-op. It reads one JSON file, sees `false`, and exits. There is no chance of the agent "remembering" voice mode from earlier in the conversation and speaking when it should not -- the hook is the only thing that injects voice instructions, and it only does so when the config says to.
 
@@ -194,3 +211,7 @@ If you want to replicate this (assuming you already have the [Kokoro TTS setup](
 5. `/voice on` to enable, `/voice off` to disable
 
 The hook, the skill, and the `say` script are all in my [popos-management repo](https://github.com/codeshrew/popos-management) if you want to see the full implementation.
+
+---
+
+*Updated Feb 13, 2026:* Added the non-blocking `say` section and documented the silent-first-turn limitation after testing in a fresh session.
