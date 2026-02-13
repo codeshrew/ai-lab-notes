@@ -13,7 +13,7 @@ tags:
 description: "Use Claude Code's Stop hook to inject a system reminder after every response, so the agent remembers voice mode without burning tokens on verbose skill instructions."
 ---
 
-In a [previous post](/posts/2026-02-11_adding-voice-to-ai-coding-agent-tts-kokoro), I set up Kokoro TTS so Claude Code could speak short conversational responses via a `/voice` slash command. It worked -- but it had a problem. The agent would sometimes forget to speak after a few turns, because the voice behavior instructions only lived in the skill invocation context and faded as the conversation grew. This post covers how I fixed that with a Claude Code hook, and the design tradeoffs I considered along the way.
+In a [previous post](/ai-lab-notes/posts/2026-02-11_adding-voice-to-ai-coding-agent-tts-kokoro), I set up Kokoro TTS so Claude Code could speak short conversational responses via a `/voice` slash command. It worked -- but it had a problem. The agent would sometimes forget to speak after a few turns, because the voice behavior instructions only lived in the skill invocation context and faded as the conversation grew. This post covers how I fixed that with a Claude Code hook, and the design tradeoffs I considered along the way.
 
 ## Table of contents
 
@@ -181,7 +181,7 @@ If that turns out to be a problem, the next step would be a smarter hook that re
 
 ## Setup Summary
 
-If you want to replicate this (assuming you already have the [Kokoro TTS setup](/posts/2026-02-11_adding-voice-to-ai-coding-agent-tts-kokoro) from the previous post):
+If you want to replicate this (assuming you already have the [Kokoro TTS setup](/ai-lab-notes/posts/2026-02-11_adding-voice-to-ai-coding-agent-tts-kokoro) from the previous post):
 
 1. Create `.claude/hooks/voice-reminder.sh` with the script above
 2. `chmod +x .claude/hooks/voice-reminder.sh`
