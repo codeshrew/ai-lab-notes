@@ -177,7 +177,7 @@ The key insight: skills inject context once, hooks inject it continuously. Use s
 
 One subtle UX problem with the original `say` script: it was synchronous. When Claude called `say "Done, fixed the import error."`, the Bash tool waited for the entire TTS pipeline -- HTTP request to Kokoro, audio download, full playback via `ffplay` -- before returning. That meant Claude's text output stalled for 1-3 seconds while audio played. In a voice-enhanced workflow, you want speech and text output to happen in parallel.
 
-The fix is a one-line change at the end of the `say` script:
+The first fix was a one-line change at the end of the `say` script:
 
 ```bash
 # Play audio in background — script returns immediately, subshell cleans up after playback
@@ -187,6 +187,25 @@ The fix is a one-line change at the end of the `say` script:
 The subshell `(...)` groups the playback and cleanup, and `&` backgrounds it. The script returns immediately after `curl` finishes downloading the audio, Claude continues its text output, and the audio plays concurrently. The temp file gets cleaned up after playback finishes, even though the parent script is long gone.
 
 This matters more than it sounds. Without it, every spoken response adds a noticeable pause to Claude's output. With it, speech feels like a side channel -- information arrives through your ears while your eyes keep reading the terminal.
+
+### The Overlap Problem
+
+Non-blocking playback introduced a new bug: when Claude fires multiple `say` calls in quick succession, the audio clips overlap and play simultaneously. This happens because each backgrounded `ffplay` process starts immediately -- there is nothing serializing playback.
+
+The fix is `flock` -- a file-based lock that serializes the playback subshells while keeping the script itself non-blocking:
+
+```bash
+# Play audio in background with serialization — script returns immediately,
+# but a lockfile ensures clips play sequentially (no overlap).
+LOCKFILE="/tmp/say-playback.lock"
+(
+    flock 9
+    ffplay -nodisp -autoexit -loglevel quiet "$TMPFILE" 2>/dev/null
+    rm -f "$TMPFILE"
+) 9>"$LOCKFILE" &
+```
+
+Each `say` call still returns immediately (Claude does not wait), but the backgrounded subshells queue on the lockfile. The first clip grabs the lock and plays; the second waits for the lock, then plays; and so on. You get non-blocking output for the agent and sequential audio for the listener.
 
 ## Known Limitations
 
@@ -214,4 +233,4 @@ The hook, the skill, and the `say` script are all in my [popos-management repo](
 
 ---
 
-*Updated Feb 13, 2026:* Added the non-blocking `say` section and documented the silent-first-turn limitation after testing in a fresh session.
+*Updated Feb 13, 2026:* Added the non-blocking `say` section, the `flock` overlap fix, and documented the silent-first-turn limitation after testing in a fresh session.
