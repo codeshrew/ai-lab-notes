@@ -26,7 +26,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          # Must stay >= 11 and match the local pnpm major. Build settings live
+          # in pnpm-workspace.yaml (allowBuilds), which pnpm 9 reads as a
+          # workspace root and rejects with "packages field missing or empty".
+          # pnpm 9 also can't see allowBuilds, so esbuild and sharp would go
+          # unbuilt even if it did start.
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
