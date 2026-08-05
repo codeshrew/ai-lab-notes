@@ -1,0 +1,10 @@
+# pnpm 11 no longer reads the "pnpm" field from package.json, and it renamed
+# onlyBuiltDependencies -> allowBuilds (booleans, not a list). Without this,
+# esbuild and sharp are never built and the Astro build fails.
+#
+# Build scripts are denied by default — this allowlist is the exception, the
+# same posture ignore-scripts=true gives npm. Only add a package here if it
+# genuinely needs a native build step.
+allowBuilds:
+  esbuild: true
+  sharp: true
